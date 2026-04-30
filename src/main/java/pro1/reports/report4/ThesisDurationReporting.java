@@ -3,17 +3,13 @@ package pro1.reports.report4;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import pro1.DataSource;
+import pro1.apiDataModel.Date;
 import pro1.reports.report4.reportDataModel.ThesisDurationStats;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class ThesisDurationReporting {
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy");
-
     public static Object[] GetReport(DataSource dataSource, String katedra, String[] years) {
         var result = new ThesisDurationStats[years.length];
 
@@ -26,8 +22,14 @@ public class ThesisDurationReporting {
 
             if (data != null && data.items != null) {
                 for (var item : data.items) {
-                    var start = parseDateValue(item != null ? item.datumZadani : null);
-                    var end = parseDateValue(item != null ? item.datumOdevzdani : null);
+                    if (item == null || item.datumZadani == null || item.datumOdevzdani == null) {
+                        continue;
+                    }
+                    if (!item.datumZadani.isValid() || !item.datumOdevzdani.isValid()) {
+                        continue;
+                    }
+                    var start = item.datumZadani.toLocalDate();
+                    var end = item.datumOdevzdani.toLocalDate();
                     if (start != null && end != null) {
                         totalDays += ChronoUnit.DAYS.between(start, end);
                         count++;
@@ -42,28 +44,13 @@ public class ThesisDurationReporting {
         return result;
     }
 
-    private static LocalDate parseDateValue(DateValue value) {
-        if (value == null || value.value == null || value.value.isEmpty()) {
-            return null;
-        }
-        try {
-            return LocalDate.parse(value.value, DATE_FORMAT);
-        } catch (DateTimeParseException ex) {
-            return null;
-        }
-    }
-
     private static class KvalifikacniPraceList {
         @SerializedName("kvalifikacniPrace")
         List<KvalifikacniPrace> items;
     }
 
     private static class KvalifikacniPrace {
-        DateValue datumZadani;
-        DateValue datumOdevzdani;
-    }
-
-    private static class DateValue {
-        String value;
+        Date datumZadani;
+        Date datumOdevzdani;
     }
 }
