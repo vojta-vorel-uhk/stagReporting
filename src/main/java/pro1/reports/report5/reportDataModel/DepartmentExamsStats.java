@@ -4,11 +4,10 @@ import java.util.List;
 
 public class DepartmentExamsStats {
     public long realizedExamsCount;
-    public List<Long> teacherIds;
+    public List<Integer> teacherIds;
 
-    public DepartmentExamsStats(long realizedExamsCount, List<Long> teacherIds) {
+    public DepartmentExamsStats(long realizedExamsCount, List<Integer> teacherIds) {
         this.realizedExamsCount = realizedExamsCount;
         this.teacherIds = teacherIds;
     }
 }
-

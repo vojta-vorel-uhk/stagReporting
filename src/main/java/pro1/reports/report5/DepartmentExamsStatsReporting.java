@@ -16,7 +16,7 @@ public class DepartmentExamsStatsReporting {
         var termList = new Gson().fromJson(json, TermList.class);
 
         long realizedExamsCount = 0;
-        var teacherIdsSet = new HashSet<Long>();
+        var teacherIdsSet = new HashSet<Integer>();
 
         if (termList != null && termList.items != null) {
             for (var term : termList.items) {
@@ -56,7 +56,6 @@ public class DepartmentExamsStatsReporting {
 
     private static class Term {
         String obsazeni;
-        Long ucitIdno;
+        Integer ucitIdno;
     }
 }
-
