@@ -27,4 +27,16 @@ public class TestDataSource implements DataSource {
     public String getTerminyZkousek(String semestr, String zkratka, String katedra) {
         return "";
     }
+
+    @Override
+    public String getTerminyZkousek2(String katedra) {
+        return ResourcesUtils.readResourceFile(
+                String.format("testData/getTerminyZkousek_%s.json", katedra));
+    }
+
+    @Override
+    public String getKvalifikacniPrace(String rokObhajoby, String katedra) {
+        return ResourcesUtils.readResourceFile(
+                String.format("testData/getKvalifikacniPrace_%s_%s.json", rokObhajoby, katedra));
+    }
 }

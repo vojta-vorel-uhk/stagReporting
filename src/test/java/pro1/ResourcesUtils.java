@@ -3,7 +3,7 @@ package pro1;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
+
 
 public class ResourcesUtils {
     public static String readResourceFile(String path){
@@ -14,3 +14,5 @@ public class ResourcesUtils {
         }
     }
 }
+
+
