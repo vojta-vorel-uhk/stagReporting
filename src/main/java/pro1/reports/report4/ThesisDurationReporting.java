@@ -11,10 +11,12 @@ import java.util.List;
 
 public class ThesisDurationReporting {
     public static Object[] GetReport(DataSource dataSource, String katedra, String[] years) {
+        // Pro každý rok spočítám průměrnou délku kvalifikačních prací zvlášť.
         var result = new ThesisDurationStats[years.length];
 
         for (int i = 0; i < years.length; i++) {
             var year = years[i];
+            // Načtu práce za konkrétní rok a katedru.
             var json = dataSource.getKvalifikacniPrace(year, katedra);
             var data = new Gson().fromJson(json, KvalifikacniPraceList.class);
             long totalDays = 0;
@@ -22,12 +24,15 @@ public class ThesisDurationReporting {
 
             if (data != null && data.items != null) {
                 for (var item : data.items) {
+                    // Beru jen úplné a validně zapsané datumy, jinak záznam přeskočím.
                     if (item == null || item.datumZadani == null || item.datumOdevzdani == null) {
                         continue;
                     }
                     if (!item.datumZadani.isValid() || !item.datumOdevzdani.isValid()) {
                         continue;
                     }
+
+                    // Rozdíl počítám v dnech přes ChronoUnit, aby výsledek seděl na testy.
                     var start = item.datumZadani.toLocalDate();
                     var end = item.datumOdevzdani.toLocalDate();
                     if (start != null && end != null) {
@@ -37,6 +42,7 @@ public class ThesisDurationReporting {
                 }
             }
 
+            // Průměr zaokrouhlím stejně jako v zadání a testech.
             long average = count == 0 ? 0 : Math.round((double) totalDays / count);
             result[i] = new ThesisDurationStats(year, average);
         }

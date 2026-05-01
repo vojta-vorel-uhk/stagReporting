@@ -12,10 +12,12 @@ import java.util.List;
 
 public class DepartmentExamsStatsReporting {
     public static Object GetReport(DataSource dataSource, String katedra) {
+        // Načtu termíny zkoušek pro danou katedru.
         var json = dataSource.getTerminyZkousek2(katedra);
         var termList = new Gson().fromJson(json, TermList.class);
 
         long realizedExamsCount = 0;
+        // Učitele sbírám do množiny, aby se neopakovali v výsledném JSONu.
         var teacherIdsSet = new HashSet<Integer>();
 
         if (termList != null && termList.items != null) {
@@ -23,18 +25,23 @@ public class DepartmentExamsStatsReporting {
                 if (term == null) {
                     continue;
                 }
+
+                // Realizovanou zkoušku poznám podle kladného obsazení, které je v JSONu jako text.
                 if (term.obsazeni != null) {
                     var parsed = parseIntOrNull(term.obsazeni);
                     if (parsed != null && parsed > 0) {
                         realizedExamsCount++;
                     }
                 }
+
+                // ID učitele přidám jen když opravdu existuje.
                 if (term.ucitIdno != null) {
                     teacherIdsSet.add(term.ucitIdno);
                 }
             }
         }
 
+        // Množinu převedu na seřazený seznam, aby výstup byl stabilní pro testy.
         var teacherIds = new ArrayList<>(teacherIdsSet);
         teacherIds.sort(Comparator.naturalOrder());
 
